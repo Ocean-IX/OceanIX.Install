@@ -70,6 +70,8 @@ docker-compose --version
 
 echo "Getting OceanIXP Config & Data Files"
 git clone http://github.com/Ocean-IX/OceanIX-Config.git /tmp/OceanIXP
+chmod +x /tmp/OceanIXP/bin/*
+mv /tmp/OceanIXP/bin/* /bin
 cp -rlf /tmp/OceanIXP/* /
 rm -rf /tmp/OceanIXP
 
