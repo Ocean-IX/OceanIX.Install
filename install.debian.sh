@@ -81,7 +81,7 @@ echo "Setting up IPv6 Connectivity"
 sudo tee /etc/docker/daemon.json > /dev/null << EOF
 {
   "ipv6": true,
-  "fixed-cidr-v6": "fd83:7684:f21d:$NEW_V6/64"
+  "fixed-cidr-v6": "fd83:7684:f21d:$NEW_V6::/64"
 }
 EOF
 
