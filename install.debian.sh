@@ -76,18 +76,6 @@ cp -rlf /tmp/OceanIXP/* /
 rm -rf /tmp/OceanIXP
 
 git clone http://github.com/Ocean-IX/OceanIX.Control.git /opt/oceanixp/www
-NEW_V6=$(cat /dev/urandom | tr -dc 'a-f1-9' | fold -w 4 | head -n 1)
-echo "Setting up IPv6 Connectivity"
-sudo tee /etc/docker/daemon.json > /dev/null << EOF
-{
-  "ipv6": true,
-  "fixed-cidr-v6": "fd83:7684:f21d:$NEW_V6::/64"
-}
-EOF
-
-sed -i 's/0000:0000:0000:0000/fd83:7684:f21d:$NEW_V6/g' /opt/oceanixp/yml/docker-compose.yml
-
-sudo systemctl restart docker
 
 IP_ADDR=$(curl -s https://api.ipify.org)
 clear
