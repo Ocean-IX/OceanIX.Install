@@ -85,10 +85,10 @@ echo "Setting up IPv6 Connectivity"
 sudo tee /etc/docker/daemon.json > /dev/null << EOF
 {
   "ipv6": true,
-  "fixed-cidr-v6": "$v6Subnet"
+  "fixed-cidr-v6": "$(v6Subnet)"
 }
 EOF
-sed -i 's/0000:0000:0000:0000/$v6Subnet/g' /opt/oceanixp/yml/docker-compose.yml
+sed -i 's/0000:0000:0000:0000/$(v6Subnet)/g' /opt/oceanixp/yml/docker-compose.yml
 
 echo "net.ipv6.conf.eth0.proxy_ndp=1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
@@ -102,7 +102,7 @@ proxy eth0
     ttl 30000
   
     # docker bridge
-    rule $v6Subnet:c1::/80
+    rule $(v6Subnet):c1::/80
     {
         auto
     }
