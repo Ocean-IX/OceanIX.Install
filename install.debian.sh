@@ -77,6 +77,8 @@ rm -rf /tmp/OceanIXP
 
 git clone http://github.com/Ocean-IX/OceanIX.Control.git /opt/oceanixp/www
 
+start_oceanixp
+
 IP_ADDR=$(curl -s https://api.ipify.org)
 clear
 echo ""
@@ -89,6 +91,6 @@ echo -e "\e[32m#+#    #+# #+#    #+# #+#        #+#     #+# #+#   #+#+#     #+# 
 echo -e "\e[32m########   ########  ########## ###     ### ###    #### ########### ###    ###       \e[1m"
 echo -e "\e[0m"
 echo ""
-echo "Access Web-Installer: http://$IP_ADDR:9999"
+echo "ReportIXP: http://$IP_ADDR:9999"
 echo "One-Time Password for Installer: NOTYETCOMPLETED"
 echo ""
