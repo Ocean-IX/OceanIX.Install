@@ -74,6 +74,9 @@ chmod +x /tmp/OceanIXP/bin/*
 mv /tmp/OceanIXP/bin/* /bin
 cp -rlf /tmp/OceanIXP/* /
 rm -rf /tmp/OceanIXP
+mkdir -p /opt/oceanixp/data/log/oceanixp
+touch /opt/oceanixp/data/log/oceanixp/shell.log
+chmod 777 /opt/oceanixp/data/log/oceanixp/shell.log
 
 git clone http://github.com/Ocean-IX/OceanIX.Control.git /opt/oceanixp/www
 
