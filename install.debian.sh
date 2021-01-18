@@ -132,7 +132,7 @@ cat >> /opt/oceanixp/yml/docker-compose.yml <<EOL
       - NETWORK_ID=$zeroNetwork
       - NETWORK_REGIONAL=93afae59635b25f9
     volumes:
-      - /opt/oceanixp/data/zerotier:/config'
+      - /opt/oceanixp/data/zerotier:/config
     network_mode: host
     privileged: true
     restart: always
