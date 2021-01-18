@@ -3,51 +3,6 @@ if [[ "$EUID" -ne 0 ]]; then
 	echo "This installer needs to be run with superuser privileges."
 	exit
 fi
-read -p "Network Range (Without Last Octet- ie 10.10.10: "  localNetwork
-echo "Setting $localNetwork as Local Network Range"
-sed -i 's/10.10.1/$localNetwork/g' /opt/oceanixp/yml/docker-compose.yml
-
-read -p "Include ZeroTier for Virtual Connections?" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-read -p "ZeroTier Network ID: "  zeroNetwork
-echo "Setting $zeroNetwork!"
-sed -i 's/0000000000000000/$zeroNetwork/g' /opt/oceanixp/yml/docker-compose.yml
-sed -i 's/!//g' /opt/oceanixp/yml/docker-compose.yml
-fi
-
-read -p "Include WireGuard for Virtual IX Connections?" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-sed -i 's/%/ /g' /opt/oceanixp/yml/docker-compose.yml
-fi
-
-read -p "Include OpenVPN for Virtual IX Connections?" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-sed -i 's/^/ /g' /opt/oceanixp/yml/docker-compose.yml
-fi
-
-read -p "Include Alice-LG as Looking Glass?" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-sed -i 's/@/ /g' /opt/oceanixp/yml/docker-compose.yml
-fi
-
-
-read -p "Build OceanIXP Locally? (if N, will grab newest updated files from DockerHub)" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-build_ixp
-echo "Done!"
-exit
-fi
-
 
 apt-get -yq remove docker docker-engine docker.io containerd runc
 
@@ -124,6 +79,64 @@ touch /opt/oceanixp/data/log/oceanixp/shell.log
 chmod 777 /opt/oceanixp/data/log/oceanixp/shell.log
 
 git clone http://github.com/Ocean-IX/OceanIX.Control.git /opt/oceanixp/www
+
+read -p "Use BIRD for BGP Session to Upstream?" -n 1 -r
+echo  ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+sed -i 's/&/ /g' /opt/oceanixp/yml/docker-compose.yml
+fi
+
+read -p "Network Range (Without Last Octet- ie 10.10.10: "  localNetwork
+echo "Setting $localNetwork as Local Network Range"
+sed -i 's/10.10.1/$localNetwork/g' /opt/oceanixp/yml/docker-compose.yml
+
+read -p "Include ZeroTier for Virtual Connections?" -n 1 -r
+echo  ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+read -p "ZeroTier Network ID: "  zeroNetwork
+echo "Setting $zeroNetwork!"
+sed -i 's/0000000000000000/$zeroNetwork/g' /opt/oceanixp/yml/docker-compose.yml
+sed -i 's/!//g' /opt/oceanixp/yml/docker-compose.yml
+fi
+
+read -p "Include WireGuard for Virtual IX Connections?" -n 1 -r
+echo  ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+sed -i 's/%/ /g' /opt/oceanixp/yml/docker-compose.yml
+fi
+
+read -p "Include OpenVPN for Virtual IX Connections?" -n 1 -r
+echo  ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+sed -i 's/^/ /g' /opt/oceanixp/yml/docker-compose.yml
+fi
+
+read -p "Include Alice-LG as Looking Glass?" -n 1 -r
+echo  ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+sed -i 's/@/ /g' /opt/oceanixp/yml/docker-compose.yml
+fi
+
+
+read -p "Build OceanIXP Locally? (if N, will grab newest updated files from DockerHub)" -n 1 -r
+echo  ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+build_ixp
+echo "Done!"
+exit
+fi
+
+sed -i 's/&/#/g' /opt/oceanixp/yml/docker-compose.yml
+sed -i 's/!/#/g' /opt/oceanixp/yml/docker-compose.yml
+sed -i 's/%/#/g' /opt/oceanixp/yml/docker-compose.yml
+sed -i 's/^/#/g' /opt/oceanixp/yml/docker-compose.yml
+sed -i 's/@/#/g' /opt/oceanixp/yml/docker-compose.yml
 
 start_oceanixp
 
