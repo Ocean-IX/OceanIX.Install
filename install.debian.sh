@@ -81,21 +81,19 @@ chmod 777 /opt/oceanixp/data/log/oceanixp/shell.log
 echo "Getting Dockerfiles.."
 mkdir -p /opt/oceanixp/yml/build_ixp
         echo "Retrieve Files: oceanixau/zerotier.docker:multi"
-        /usr/bin/git clone --single-branch --branch multi  https://github.com/Ocean-IX/rs1.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/zerotier.docker-multi
+        /usr/bin/git clone --single-branch --branch multi  https://github.com/RouteIX/zerotier.docker.git /opt/oceanixp/yml/build_ixp/zerotier.docker-multi
         echo "Retrieve Files: oceanixau/zerotier.docker"
-        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/rs2.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/zerotier.docker
+        /usr/bin/git clone --single-branch --branch master https://github.com/RouteIX/zerotier.docker.git /opt/oceanixp/yml/build_ixp/zerotier.docker
         echo "Retrieve Files: oceanixau/wireguard.docker"
-        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/wireguard.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/wireguard.docker
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/wireguard.docker.git /opt/oceanixp/yml/build_ixp/wireguard.docker
 	echo "Retrieve Files: oceanixau/openvpn.docker"
-        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/openvpn.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/openvpn.docker
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/openvpn.docker.git /opt/oceanixp/yml/build_ixp/openvpn.docker
 	echo "Retrieve Files: oceanixau/bird.rs.docker"
-        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/bird.rs.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/bird.rs.docker
-	echo "Retrieve Files: oceanixau/routeserver.docker"
-        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/routeserver.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/routeserver.docker
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/bird.rs.docker.git /opt/oceanixp/yml/build_ixp/bird.rs.docker
 	echo "Retrieve Files: oceanixau/rs.gen.docker"
-        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/rs.gen.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/rs.gen.docker
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/rs.gen.docker.git /opt/oceanixp/yml/build_ixp/rs.gen.docker
 	echo "Retrieve Files: oceanixau/reportixp.docker"
-        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/reportixp.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/reportixp.docker
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/reportixp.docker.git /opt/oceanixp/yml/build_ixp/reportixp.docker
 
 git clone http://github.com/Ocean-IX/OceanIX.Control.git /opt/oceanixp/www
 
