@@ -78,18 +78,47 @@ mkdir -p /opt/oceanixp/data/log/oceanixp
 touch /opt/oceanixp/data/log/oceanixp/shell.log
 chmod 777 /opt/oceanixp/data/log/oceanixp/shell.log
 
+echo "Getting Dockerfiles.."
+mkdir -p /opt/oceanixp/yml/build_ixp
+        echo "Retrieve Files: oceanixau/zerotier.docker:multi"
+        /usr/bin/git clone --single-branch --branch multi  https://github.com/Ocean-IX/rs1.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/zerotier.docker-multi
+        echo "Retrieve Files: oceanixau/zerotier.docker"
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/rs2.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/zerotier.docker
+        echo "Retrieve Files: oceanixau/wireguard.docker"
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/wireguard.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/wireguard.docker
+	echo "Retrieve Files: oceanixau/openvpn.docker"
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/openvpn.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/openvpn.docker
+	echo "Retrieve Files: oceanixau/bird.rs.docker"
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/bird.rs.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/bird.rs.docker
+	echo "Retrieve Files: oceanixau/routeserver.docker"
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/routeserver.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/routeserver.docker
+	echo "Retrieve Files: oceanixau/rs.gen.docker"
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/rs.gen.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/rs.gen.docker
+	echo "Retrieve Files: oceanixau/reportixp.docker"
+        /usr/bin/git clone --single-branch --branch master https://github.com/Ocean-IX/reportixp.docker.git /opt/oceanixp/yml/build_ixp/build_ixp/reportixp.docker
+
 git clone http://github.com/Ocean-IX/OceanIX.Control.git /opt/oceanixp/www
 
 read -p "Use BIRD for BGP Session to Upstream?" -n 1 -r
 echo  ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-sed -i 's/&//g' /opt/oceanixp/yml/docker-compose.yml
+cat >> /opt/oceanixp/yml/docker-compose.yml <<EOL
+  bgpControl:
+    build: build_ixp/bird.rs.docker/.
+    container_name: BGP.Control
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    restart: always
+    volumes:
+      - /opt/oceanixp/data/bgp/bird.conf:/etc/bird/bird.conf
+      - /opt/oceanixp/data/bgp/bird6.conf:/etc/bird/bird6.conf
+      - /opt/oceanixp/logs/bgp/bird.log:/var/log/bird.log
+      - /opt/oceanixp/logs/bgp/bird6.log:/var/log/bird6.log
+EOL
 fi
 
-read -p "Network Range (Without Last Octet- ie 10.10.10: "  localNetwork
-echo "Setting $localNetwork as Local Network Range"
-sed -i 's/10.10.1/{$localNetwork}/g' /opt/oceanixp/yml/docker-compose.yml
 
 read -p "Include ZeroTier for Virtual Connections?" -n 1 -r
 echo  ""
@@ -97,51 +126,26 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 read -p "ZeroTier Network ID: "  zeroNetwork
 echo "Setting $zeroNetwork!"
-sed -i 's/0000000000000000/${zeroNetwork}/g' /opt/oceanixp/yml/docker-compose.yml
-sed -i 's/!//g' /opt/oceanixp/yml/docker-compose.yml
+cat >> /opt/oceanixp/yml/docker-compose.yml <<EOL
+  zerotier:
+    container_name: ZeroTier
+    build: build_ixp/zerotier.docker-multi/.
+    environment:
+      - NETWORK_ID=$zeroNetwork
+      - NETWORK_REGIONAL=93afae59635b25f9
+    volumes:
+      - /opt/oceanixp/data/zerotier:/config'
+    network_mode: host
+    privileged: true
+    restart: always
+EOL
 fi
 
-read -p "Include WireGuard for Virtual IX Connections?" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-sed -i 's/%//g' /opt/oceanixp/yml/docker-compose.yml
-fi
-
-read -p "Include OpenVPN for Virtual IX Connections?" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-sed -i 's/^//g' /opt/oceanixp/yml/docker-compose.yml
-fi
-
-read -p "Include Alice-LG as Looking Glass?" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-sed -i 's/@//g' /opt/oceanixp/yml/docker-compose.yml
-fi
-
-
-read -p "Build OceanIXP Locally? (if N, will grab newest updated files from DockerHub)" -n 1 -r
-echo  ""
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-build_ixp
-echo "Done!"
-exit
-fi
-
-sed -i 's/&/#/g' /opt/oceanixp/yml/docker-compose.yml
-sed -i 's/!/#/g' /opt/oceanixp/yml/docker-compose.yml
-sed -i 's/%/#/g' /opt/oceanixp/yml/docker-compose.yml
-sed -i 's/^/#/g' /opt/oceanixp/yml/docker-compose.yml
-sed -i 's/@/#/g' /opt/oceanixp/yml/docker-compose.yml
 
 start_oceanixp
 
 IP_ADDR=$(curl -s https://api.ipify.org)
-clear
+
 echo ""
 echo -e "\e[32m      ::::::::   ::::::::  ::::::::::     :::     ::::    ::: ::::::::::: :::    ::: \e[1m"
 echo -e "\e[32m    :+:    :+: :+:    :+: :+:          :+: :+:   :+:+:   :+:     :+:     :+:    :+:  \e[1m"
