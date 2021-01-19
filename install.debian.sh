@@ -102,7 +102,8 @@ echo  ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 cat >> /opt/oceanixp/yml/docker-compose.yml <<EOL
-  bgpControl:
+
+  bgpcontrol:
     build: build_ixp/bird.rs.docker/.
     container_name: BGP.Control
     restart: unless-stopped
@@ -125,6 +126,7 @@ then
 read -p "ZeroTier Network ID: "  zeroNetwork
 echo "Setting $zeroNetwork!"
 cat >> /opt/oceanixp/yml/docker-compose.yml <<EOL
+
   zerotier:
     container_name: ZeroTier
     build: build_ixp/zerotier.docker-multi/.
