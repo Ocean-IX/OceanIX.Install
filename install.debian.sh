@@ -164,26 +164,25 @@ systemctl enable bird6
 fi
 
 
-read -p "Include ZeroTier for Virtual Connections?" -n 1 -r
+read -p "Include ZeroTier for Virtual Connections? [Y/N]" -n 1 -r
 echo  ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+curl -s https://install.zerotier.com | bash
+
 read -p "ZeroTier Network ID: "  zeroNetwork
 echo "Setting $zeroNetwork!"
-cat >> /opt/oceanixp/yml/docker-compose.yml <<EOL
 
-  zerotier:
-    container_name: ZeroTier
-    build: build_ixp/zerotier.docker-multi/.
-    environment:
-      - NETWORK_ID=$zeroNetwork
-      - NETWORK_REGIONAL=93afae59635b25f9
-    volumes:
-      - /opt/oceanixp/data/zerotier:/config
-    network_mode: host
-    privileged: true
-    restart: always
-EOL
+zerotier-cli join $zeroNetwork
+zerotier-cli set $zeroNetwork allowGlobal=true
+
+read -p "Join OceanIX Regional [Y/N]" -n 1 -r
+echo  ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+zerotier-cli join 93afae59635b25f9
+zerotier-cli set 93afae59635b25f9 allowGlobal=true
+fi
 fi
 
 
