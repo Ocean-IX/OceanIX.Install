@@ -3,7 +3,7 @@ if [[ "$EUID" -ne 0 ]]; then
 	echo "This installer needs to be run with superuser privileges."
 	exit
 fi
-
+IP_ADDR=$(curl -s https://api.ipify.org)
 apt-get -yq remove docker docker-engine docker.io containerd runc
 
 apt-get -yq update
@@ -101,21 +101,63 @@ read -p "Use BIRD for BGP Session to Upstream?" -n 1 -r
 echo  ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-cat >> /opt/oceanixp/yml/docker-compose.yml <<EOL
+add-apt-repository ppa:cz.nic-labs/bird
+apt-get -qy install bird
+read -p "Listen Address: "  bgpListen
+echo "Setting $bgpListen"
+read -p "Your ASN (NUMBERS ONLY): "  bgpASN
+echo "Setting $bgpASN"
+read -p "UPSTREAM ASN (NUMBERS ONLY): "  bgpUpASN
+echo "Setting $bgpUpASN"
+read -p "Neighbour IP: "  bgpUpNeigh
+echo "Setting $bgpUpNeigh"
+read -p "Anchor Subnet: "  bgpAnchor
+echo "Setting $bgpAnchor"
 
-  bgpcontrol:
-    build: build_ixp/bird.rs.docker/.
-    container_name: BGP.Control
-    restart: unless-stopped
-    network_mode: host
-    privileged: true
-    restart: always
-    volumes:
-      - /opt/oceanixp/data/bgp/bird.conf:/etc/bird/bird.conf
-      - /opt/oceanixp/data/bgp/bird6.conf:/etc/bird/bird6.conf
-      - /opt/oceanixp/logs/bgp/bird.log:/var/log/bird.log
-      - /opt/oceanixp/logs/bgp/bird6.log:/var/log/bird6.log
+rm rf /etc/bird/bird6.conf
+cat >> /etc/bird/bird6.conf <<EOL
+router id $IP_ADDR;
+
+listen bgp address $bgpListen port 180;
+
+log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };
+log stderr all;
+
+protocol kernel {
+#       learn;                  # Learn all alien routes from the kernel
+        persist;                # Don't remove routes on bird shutdown
+        scan time 20;           # Scan kernel routing table every 20 seconds
+#       import none;            # Default is import all
+        export none;            # Default is export none
+#       kernel table 5;         # Kernel table to synchronize with (default: main)
+}
+
+protocol static export_routes {
+    route $bgpAnchor via $bgpListen;
+    route 2a0a:6040:dead::/48 via $bgpListen;
+    route 2a0a:6040:beef::/48 via $bgpListen;
+}
+
+protocol device {
+        scan time 60;           # Scan interfaces every 10 seconds
+}
+
+# Disable automatically generating direct routes to all network interfaces.
+protocol direct {
+        disabled;               # Disable by default
+}
+
+protocol bgp {
+        import all;
+        export where proto = "export_routes";
+        local as $bgpASN;
+        neighbor $bgpUpNeigh as $bgpUpASN;
+}
+
 EOL
+
+systemctl restart bird6
+systemctl enable bird6
 fi
 
 
@@ -144,7 +186,7 @@ fi
 
 start_oceanixp
 
-IP_ADDR=$(curl -s https://api.ipify.org)
+
 
 echo ""
 echo -e "\e[32m      ::::::::   ::::::::  ::::::::::     :::     ::::    ::: ::::::::::: :::    ::: \e[1m"
