@@ -113,9 +113,12 @@ read -p "Neighbour IP: "  bgpUpNeigh
 echo "Setting $bgpUpNeigh"
 read -p "Anchor Subnet: "  bgpAnchor
 echo "Setting $bgpAnchor"
-
-rm rf /etc/bird/bird6.conf
-cat >> /etc/bird/bird6.conf <<EOL
+rm -rf /etc/bird/bird.conf
+rm -rf /etc/bird/bird6.conf
+ln -s /opt/oceanixp/data/bgp/bird.conf /etc/bird/bird.conf
+ln -s /opt/oceanixp/data/bgp/bird6.conf /etc/bird/bird6.conf
+rm rf /opt/oceanixp/data/bgp/bird6.conf
+cat >> /opt/oceanixp/data/bgp/bird6.conf <<EOL
 router id $IP_ADDR;
 
 listen bgp address $bgpListen port 180;
